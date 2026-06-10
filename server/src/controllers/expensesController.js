@@ -1,19 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
-const { readExpenses, writeExpenses } = require('../utils/fileStore');
+const { readExpenses, writeExpenses } = require('../utils/memoryStore');
 
 // GET /api/expenses
-// Supports optional query params: ?category=Food&from=2024-01-01&to=2024-01-31
 const getExpenses = (req, res) => {
   try {
     let expenses = readExpenses();
     const { category, from, to } = req.query;
 
-    // Filter by category if provided
     if (category && category !== 'All') {
       expenses = expenses.filter((e) => e.category === category);
     }
-
-    // Filter by date range if provided
     if (from) {
       expenses = expenses.filter((e) => new Date(e.date) >= new Date(from));
     }
@@ -21,9 +17,7 @@ const getExpenses = (req, res) => {
       expenses = expenses.filter((e) => new Date(e.date) <= new Date(to));
     }
 
-    // Sort by date newest first
     expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-
     res.status(200).json(expenses);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch expenses' });
@@ -67,7 +61,6 @@ const editExpense = (req, res) => {
       return res.status(404).json({ error: 'Expense not found' });
     }
 
-    // Update only provided fields, keep the rest
     expenses[index] = {
       ...expenses[index],
       amount: parseFloat(amount),
@@ -108,13 +101,10 @@ const deleteExpense = (req, res) => {
 const getSummary = (req, res) => {
   try {
     const expenses = readExpenses();
-
-    // Get current month and year
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    // Filter expenses for this month only
     const thisMonthExpenses = expenses.filter((e) => {
       const expDate = new Date(e.date);
       return (
@@ -123,19 +113,15 @@ const getSummary = (req, res) => {
       );
     });
 
-    // Total spent this month
     const totalThisMonth = thisMonthExpenses.reduce(
-      (sum, e) => sum + e.amount,
-      0
+      (sum, e) => sum + e.amount, 0
     );
 
-    // Total per category (this month)
     const totalPerCategory = thisMonthExpenses.reduce((acc, e) => {
       acc[e.category] = (acc[e.category] || 0) + e.amount;
       return acc;
     }, {});
 
-    // Highest single expense (all time)
     const highestExpense =
       expenses.length > 0
         ? expenses.reduce((max, e) => (e.amount > max.amount ? e : max))

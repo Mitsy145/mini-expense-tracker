@@ -1,5 +1,4 @@
-const { readBudget, writeBudget } = require('../utils/budgetStore');
-const { readExpenses } = require('../utils/fileStore');
+const { readBudget, writeBudget, readExpenses } = require('../utils/memoryStore');
 
 // GET /api/budget
 const getBudget = (req, res) => {
@@ -7,10 +6,7 @@ const getBudget = (req, res) => {
     const budget = readBudget();
     const expenses = readExpenses();
 
-    // Calculate total spent (all time)
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-    // Real time balance
     const balance = budget.income - totalSpent;
 
     res.status(200).json({
@@ -36,7 +32,6 @@ const setIncome = (req, res) => {
     budget.income = parseFloat(income);
     writeBudget(budget);
 
-    // Recalculate balance
     const expenses = readExpenses();
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
     const balance = budget.income - totalSpent;
