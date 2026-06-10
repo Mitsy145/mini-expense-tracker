@@ -1,0 +1,17 @@
+# Root
+node_modules/
+
+# Server
+server/node_modules/
+server/.env
+server/src/data/expenses.json
+server/src/data/budget.json
+
+# Client
+client/node_modules/
+client/.env
+client/dist/
+
+# Misc
+.DS_Store
+*.log
