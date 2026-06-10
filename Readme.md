@@ -342,6 +342,7 @@ Set or update monthly income.
 
 ## 6 Project Structure
 
+```
 mini-expense-tracker/
 │
 ├── README.md                         ← Project documentation
@@ -411,7 +412,7 @@ mini-expense-tracker/
             ├── formatCurrency.js     ← Formats numbers to ₹ Indian locale
             ├── dateHelpers.js        ← Date range and formatting helpers
             └── exportCSV.js          ← CSV download for visible expenses
-
+```
 
 
 ## 7  Next Steps
